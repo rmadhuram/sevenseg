@@ -1,0 +1,191 @@
+<html>
+    <head>
+        <script src="http://yui.yahooapis.com/3.2.0/build/yui/yui-min.js"></script>
+        <script src="raphael.js"></script>    
+        <script src="sevenseg.js"></script>
+        <script src="sevenseg-demos.js"></script>
+        <style type="text/css">
+	        /*margin and padding on body element
+	          can introduce errors in determining
+	          element position and are not recommended;
+	          we turn them off as a foundation for YUI
+	          CSS treatments. */
+	        body {
+	            margin:0;
+	            padding:0;
+	        }
+        </style>
+        
+        <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/3.2.0/build/cssfonts/fonts-min.css" />
+                
+        <style type="text/css">
+			body {
+			     color:#333333;
+			     font:13px/160% Verdana,Helvetica,Tahoma,Verdana,sans-serif;
+			}        
+			
+			.content {
+			     margin-left: 5px;
+			     margin-right: 5px;
+			}
+        
+            #clock {
+                padding: 20px;
+                 background-color: black; 
+                 width: 240px;
+                 _width: 260px;
+                 height: 50px;
+                 border-radius: 15px;
+                 -moz-border-radius: 15px;
+            }
+            
+            #clock div {
+                float: left;
+                background-color: black;                
+                padding-right: 3px;
+            }
+            
+            .separator {
+                padding-left: 5px;
+                padding-right: 5px;
+                background-color: black; 
+            }
+        </style>
+        
+		<!-- SyntaxHighlighter Include required JS files -->
+		<script type="text/javascript" src="syntax/shCore.js"></script>
+        <script type="text/javascript" src="syntax/shBrushJScript.js"></script>
+ 
+		<!-- Include *at least* the core style and default theme -->
+		<link href="syntax/shCore.css" rel="stylesheet" type="text/css" />
+		<link href="syntax/shThemeDefault.css" rel="stylesheet" type="text/css" />        
+		
+		<script>
+			YUI().use('node-base', function(Y) {
+			     Y.on("domready", function() {
+			         SyntaxHighlighter.all();
+			     });
+			});
+		</script>
+        
+    </head>
+    <body class="yui3-skin-sam  yui-skin-sam">
+    
+        <div class="content">
+        
+        <h2>Seven Segment Widget Demos</h2>
+        
+        <p>The following demos shows the seven segment widget in action. The widget was built using YUI 3 and Raphael JS.
+        <br/>
+        <a href="http://geekraj.com/wordpress/?p=458">Read the article</a>
+        </p>
+        
+		<div id="demo">
+		    <ul>
+		        <li><a href="#tab1">Basic Display</a></li>
+		        <li><a href="#tab2">Counter</a></li>
+		        <li><a href="#tab3">Digital Clock</a></li>
+		    </ul>
+		    <div>
+		        <div id="tab1">
+		            <p>A basic display showing number 8</p>	           
+		            <div id="seg1"></div>	            
+	                <h3>Source Code:</h3>
+                    
+                    <pre class="brush: js">
+         var ss = new net.raj.SevenSeg({srcNode: "#seg1", "value": 8, "scale": 50, "colors.active.fill": "#00f"});
+         ss.render(); 
+                    </pre>     	            
+		        </div>
+		        <div id="tab2">
+			        <p>A display cycling through all digits and changing colors.</p>        
+			        <div id="seg2"></div>    
+                    <h3>Source Code:</h3>
+                    
+                    <pre class="brush: js">
+         var ss = new net.raj.SevenSeg({srcNode: "#seg2", "value": 0, "scale": 100, 
+             "colors.active.fill": "#f00", "colors.active.outline": "#fff",
+             "colors.inactive.fill": "#EDF5FF"});
+         ss.render();
+         var flag = 0;
+         var counter = 0;
+         
+         var cycleColors = ["#f00", "#080", "#00f" ];
+         setInterval(function() {
+            counter++;
+            ss.set("value", counter%10);
+            ss.set("colors.active.fill", cycleColors[counter % 3]);
+         }, 2000); 
+                    </pre> 			        
+			            
+		        </div>
+		        <div id="tab3">
+		            <br/>
+			        <div id="clock">
+			            <div id="hh1"></div><div id="hh2"></div>
+			            <div id="sep1" class="separator"></div>
+			            <div id="mm1"></div><div id="mm2"></div>
+			            <div id="sep2" class="separator"></div>
+			            <div id="ss1"></div><div id="ss2"></div>
+			        </div>    
+			        
+                    <h3>Source Code:</h3>
+                    
+                    <pre class="brush: js">
+         var ids = ["hh1", "hh2", "mm1", "mm2", "ss1", "ss2"];
+         var segs = new Array();
+         for (var i=0; i&lt;ids.length; i++) {
+             var thisDigit = new net.raj.SevenSeg({srcNode: "#" + ids[i], scale: 20, 
+                 colors: { 
+                     active: {fill: "#88f", outline: "66ff"}, 
+                     inactive: {fill: "#000", outline: "000"}
+                 }
+             });
+             
+             thisDigit.render();
+             segs[ids[i]] = thisDigit;
+         }
+         
+         ids = ["sep1", "sep2"];
+         for (var i=0; i&lt;ids.length; i++) {
+             var sep = new net.raj.DigitSeparator({srcNode: "#" + ids[i], scale: 20, 
+                 colors: { 
+                     fill: "#88f", 
+                     outline: "66ff" 
+                 }
+             });
+             sep.render();         
+         }
+         
+         setInterval(function() {
+             var currentTime = new Date();
+             var ss = currentTime.getSeconds();
+             segs["ss1"].set("value", Math.floor(ss/10));
+             segs["ss2"].set("value", ss%10);
+             
+             var mm = currentTime.getMinutes();
+             segs["mm1"].set("value", Math.floor(mm/10));
+             segs["mm2"].set("value", mm%10);
+             
+             var hh = currentTime.getHours();
+             segs["hh1"].set("value", Math.floor(hh/10));
+             segs["hh2"].set("value", hh%10);             
+             
+         }, 1000);
+                    </pre>    			            
+		        </div>
+		    </div>
+		</div>
+		
+		<script>
+		YUI().use('tabview', function(Y) {
+		    var tabview = new Y.TabView({
+		        srcNode: '#demo'
+		    });
+		 
+		    tabview.render();
+		});
+		</script>		
+        </div>
+    </body>
+</html>
